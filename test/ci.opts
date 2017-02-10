@@ -1,0 +1,5 @@
+--recursive
+--require ./test/setup
+--ui bdd
+-R mocha-bamboo-reporter
+--reporter-options output=test-results.json

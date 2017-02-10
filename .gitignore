@@ -1,0 +1,5 @@
+# node
+node_modules
+# coverage dir
+./coverage
+.nyc_output
