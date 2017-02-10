@@ -20,7 +20,7 @@
     "cross-env": "^3.1.4",
     "eslint": "*",
     "eslint-config-ali": "*",
-    "eslint-plugin-import": "*",
+    "eslint-plugin-import": "1.x",
     "eslint-plugin-jsx-a11y": "*",
     "eslint-plugin-react": "*",
     "istanbul": "^0.4.4",
