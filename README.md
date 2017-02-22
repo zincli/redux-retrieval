@@ -7,3 +7,8 @@
 reusable actions, reducers and sagas for retrieval application
 
 // documents are coming
+
+
+## Examples
+
+* [traditional list page](./examples/traditional/)
