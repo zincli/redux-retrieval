@@ -14,20 +14,27 @@ const data = [
   { id: '13', name: 'legend', type: 'HG', price: '$25.00' },
 ];
 
-export function find(conditions) {
+export function retrieve(conditions) {
   const keys = Object.keys(conditions);
   const items = keys.length > 0 ? data.filter((item) => {
     for (let key of keys) {
-      if (key in item && item[key] !== conditions[key]) {
+      let targets;
+      if (!Array.isArray(conditions[key])) {
+        targets = [conditions[key]];
+      } else {
+        targets = conditions[key];
+      }
+      if (key in item && targets.indexOf(item[key]) < 0) {
         return false;
       }
     }
 
     return true;
   }) : data;
+  const { pageNumber = 1 } = conditions;
 
   return {
-    items: items.slice(0, 10),
+    items: items.slice((pageNumber - 1)*10, pageNumber*10),
     total: items.length,
   };
 }

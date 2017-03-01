@@ -1,6 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { retrieve } from 'redux-retrieval/actions';
+import { makeArray } from 'redux-retrieval/selectors';
 import { Tag } from 'antd';
 
 export function Conditions(props) {
@@ -10,7 +11,7 @@ export function Conditions(props) {
       {data.map(
         condition => (
           <Tag key={`${condition.name}-${condition.value}`} closable onClose={() => {onClose(condition)}}>
-            {`${condition.name}: ${condition.value}`}
+            {condition.value}
           </Tag>
         )
       )}
@@ -22,7 +23,7 @@ export function Conditions(props) {
 }
 
 export default connect(
-  state => ({ data: toArray(state.retrievedConditions).filter(noInternal) }),
+  state => ({ data: makeArray(state.retrievedConditions) }),
   dispatch => ({
     onClose: condition => dispatch(
       retrieve({ [condition.name]: condition.value }, { drop: true })
@@ -30,23 +31,3 @@ export default connect(
     onCloseAll: () => {dispatch(retrieve({}))}
   })
 )(Conditions);
-
-function toArray(conditions) {
-  const result = [];
-
-  Object.keys(conditions).forEach((name) => {
-    const value = conditions[name];
-
-    if (Array.isArray(value)) {
-      value.forEach(val => result.push({ name, value: val }));
-    } else {
-      result.push({ name, value });
-    }
-  });
-
-  return result;
-}
-
-function noInternal({ name }) {
-  return ['pageNumber'].indexOf(name) < 0;
-}

@@ -10,7 +10,10 @@ import BatchDelete from './batch-delete';
 const styles = {
   container: {
     width: 1200,
-    margin: '50px auto'
+    margin: '20px auto'
+  },
+  title: {
+    marginBottom: 30
   },
   conditions: {
     margin: '20px 0'
@@ -29,6 +32,7 @@ const styles = {
 export default (props) => {
   return (
     <div style={styles.container}>
+      <h1 style={styles.title}>Simple List App using redux-retrieval</h1>
       <Form />
       <Conditions style={styles.conditions} />
       <div style={styles.batch}>

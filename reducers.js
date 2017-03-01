@@ -38,9 +38,11 @@ function asyncProcessing() {
   var action = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
   switch (action.type) {
-    case _actions.TYPES.ASYNC_PROCESS_START:
+    case _actions.TYPES.RETRIEVE:
+    case _actions.TYPES.TURN_PAGE:
       return true;
-    case _actions.TYPES.ASYNC_PROCESS_END:
+    case _actions.TYPES.RETRIEVE_SUCCESS:
+    case _actions.TYPES.RETRIEVE_ERROR:
       return false;
     default:
       return state;

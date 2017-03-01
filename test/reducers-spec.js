@@ -1,9 +1,10 @@
 import reducers from '../src/reducers';
 import {
   recordConditions,
+  retrieve,
+  turnPage,
   retrieveSuccess,
-  asyncProcessStart,
-  asyncProcessEnd,
+  retrieveError,
 } from '../src/actions';
 
 describe('reducers', () => {
@@ -34,11 +35,17 @@ describe('reducers', () => {
     it('should return false by default', () => {
       reducers.asyncProcessing().should.equal(false);
     });
-    it('should return false while having a asyncProcessEnd action', () => {
-      reducers.asyncProcessing(true, asyncProcessEnd()).should.equal(false);
+    it('should return false while having a retrieveSuccess action', () => {
+      reducers.asyncProcessing(true, retrieveSuccess()).should.equal(false);
     });
-    it('should return true while having a asyncProcessStart action', () => {
-      reducers.asyncProcessing(false, asyncProcessStart()).should.equal(true);
+    it('should return false while having a retrieveError action', () => {
+      reducers.asyncProcessing(true, retrieveError()).should.equal(false);
+    });
+    it('should return true while having a retrieve action', () => {
+      reducers.asyncProcessing(false, retrieve()).should.equal(true);
+    });
+    it('should return true while having a turnPage action', () => {
+      reducers.asyncProcessing(false, turnPage()).should.equal(true);
     });
   });
 });

@@ -8,7 +8,7 @@ function decorate(Co) {
   return (props) => {
     const { input, meta, children, ...rest } = props;
     return (
-      <Co value={input.value} onChange={input.onChange} {...rest} >
+      <Co {...input} {...rest} >
         {children}
       </Co>
     );
@@ -42,6 +42,6 @@ export function ConditionsForm(props) {
 export default connect(
   undefined, // omit the mapStateToProps
   dispatch => ({
-    onSubmit: conditions => dispatch(retrieve(conditions, { update: true }))
+    onSubmit: conditions => dispatch(retrieve(conditions, { attach: true }))
   })
 )(reduxForm({ form: 'conditions' })(ConditionsForm))

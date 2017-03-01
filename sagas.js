@@ -21,12 +21,9 @@ var _conditionsHelper = require('./conditions-helper');
 
 var _errors = require('./errors');
 
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
 var _marked = [watchRetrievalActions, retrieve, handleRetrieve, handleReRetrieve, handleTurnPage].map(regeneratorRuntime.mark);
 
 var defaultOptions = exports.defaultOptions = {
-  pageNumberParam: 'pageNumber',
   retrievedConditionsSelector: function retrievedConditionsSelector(state) {
     return state.retrievedConditions;
   }
@@ -58,7 +55,8 @@ function watchRetrievalActions() {
 }
 
 function retrieve(_ref, conditions) {
-  var apiClient = _ref.apiClient;
+  var service = _ref.service;
+  var meta = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
   var retrievedResult;
   return regeneratorRuntime.wrap(function retrieve$(_context2) {
     while (1) {
@@ -66,45 +64,33 @@ function retrieve(_ref, conditions) {
         case 0:
           _context2.prev = 0;
           _context2.next = 3;
-          return (0, _effects.put)((0, _actions.asyncProcessStart)());
+          return (0, _effects.call)([service, service.retrieve], conditions, meta);
 
         case 3:
-          _context2.next = 5;
-          return (0, _effects.call)([apiClient, apiClient.find], conditions);
-
-        case 5:
           retrievedResult = _context2.sent;
-          _context2.next = 8;
+          _context2.next = 6;
           return (0, _effects.put)((0, _actions.retrieveSuccess)(retrievedResult));
 
-        case 8:
-          _context2.next = 10;
+        case 6:
+          _context2.next = 8;
           return (0, _effects.put)((0, _actions.recordConditions)(conditions));
 
-        case 10:
-          _context2.next = 16;
+        case 8:
+          _context2.next = 14;
           break;
 
-        case 12:
-          _context2.prev = 12;
+        case 10:
+          _context2.prev = 10;
           _context2.t0 = _context2['catch'](0);
-          _context2.next = 16;
+          _context2.next = 14;
           return (0, _effects.put)((0, _actions.retrieveError)(_context2.t0));
 
-        case 16:
-          _context2.prev = 16;
-          _context2.next = 19;
-          return (0, _effects.put)((0, _actions.asyncProcessEnd)());
-
-        case 19:
-          return _context2.finish(16);
-
-        case 20:
+        case 14:
         case 'end':
           return _context2.stop();
       }
     }
-  }, _marked[1], this, [[0, 12, 16, 20]]);
+  }, _marked[1], this, [[0, 10]]);
 }
 
 function handleRetrieve(options, action) {
@@ -168,7 +154,7 @@ function handleRetrieve(options, action) {
 
         case 22:
           _context3.next = 24;
-          return (0, _effects.call)(retrieve, options, _extends({}, conditions, resetPaginationParams(options)));
+          return (0, _effects.call)(retrieve, options, conditions, { pageNumber: 1 });
 
         case 24:
         case 'end':
@@ -212,7 +198,7 @@ function handleTurnPage(options, action) {
         case 2:
           retrievedConditions = _context5.sent;
           _context5.next = 5;
-          return (0, _effects.call)(retrieve, options, _extends({}, retrievedConditions, createPaginationParams(options, action.payload)));
+          return (0, _effects.call)(retrieve, options, retrievedConditions, { pageNumber: action.payload });
 
         case 5:
         case 'end':
@@ -220,12 +206,4 @@ function handleTurnPage(options, action) {
       }
     }
   }, _marked[4], this);
-}
-
-function createPaginationParams(options, pageNumber) {
-  return _defineProperty({}, options.pageNumberParam, pageNumber);
-}
-
-function resetPaginationParams(options) {
-  return createPaginationParams(options, 1);
 }

@@ -48,20 +48,18 @@ describe('sagas', () => {
       );
     });
   });
-  describe('.retrieve(options, conditions)', () => {
-    const apiClient = { find: () => {} };
+  describe('.retrieve(options, conditions, meta)', () => {
+    const service = { retrieve: () => {} };
     const conditions = { foo: 'bar' };
+    const meta = { bar: 'baz' };
     let gen;
 
     before(() => {
-      gen = retrieve({ apiClient }, conditions);
+      gen = retrieve({ service }, conditions, meta);
     });
 
-    it('should put a asyncProcessStart action first', () => {
-      gen.next().value.should.eql(put(asyncProcessStart()));
-    });
-    it('should call the apiClient to do the retrieving', () => {
-      gen.next().value.should.eql(call([apiClient, apiClient.find], conditions));
+    it('should call the service.retrieve to do the retrieving', () => {
+      gen.next().value.should.eql(call([service, service.retrieve], conditions, meta));
     });
     it('should put the retrieveSuccess action while api return success', () => {
       const retrievedResult = { bar: 'baz' };
@@ -71,11 +69,8 @@ describe('sagas', () => {
     it('should put a recordConditions action then to record the retrieval conditions', () => {
       gen.next().value.should.eql(put(recordConditions(conditions)));
     });
-    it('should put a asyncProcessEnd action at last', () => {
-      gen.next().value.should.eql(put(asyncProcessEnd()));
-    });
     it('should put a retrieveError action while having a failed api call', () => {
-      const generator = retrieve({ apiClient }, conditions);
+      const generator = retrieve({ service }, conditions);
       const e = new Error('an error from apiClient.find');
 
       // put asyncProcessStart
@@ -84,8 +79,6 @@ describe('sagas', () => {
       generator.next();
       // get an error from apiClient.find
       generator.throw(e).value.should.eql(put(retrieveError(e)));
-      // and then still get to put a asyncProcessEnd
-      generator.next().value.should.eql(put(asyncProcessEnd()));
     });
   });
   describe('.handleRetrieve(options, action)', () => {
@@ -95,10 +88,7 @@ describe('sagas', () => {
         const gen = handleRetrieve(defaultOptions, retrieveAction(conditions));
 
         gen.next().value.should.eql(
-          call(retrieve, defaultOptions, {
-            ...conditions,
-            pageNumber: 1,
-          })
+          call(retrieve, defaultOptions, conditions, { pageNumber: 1 })
         );
       });
     });
@@ -120,10 +110,8 @@ describe('sagas', () => {
           gen.next(retrievedConditions).value.should.eql(call(
             retrieve,
             defaultOptions,
-            {
-              ...helper[op](retrievedConditions, conditions),
-              pageNumber: 1
-            }
+            helper[op](retrievedConditions, conditions),
+            { pageNumber: 1 }
           ));
         });
       });
@@ -165,10 +153,8 @@ describe('sagas', () => {
       gen.next(conditions).value.should.eql(call(
         retrieve,
         defaultOptions,
-        {
-          foo: 'bar',
-          pageNumber: 3,
-        }
+        { foo: 'bar' },
+        { pageNumber: 3 }
       ))
     });
   });

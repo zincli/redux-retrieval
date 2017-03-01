@@ -3,25 +3,28 @@ import { takeLatest, put } from 'redux-saga/effects';
 import retrieveSaga from 'redux-retrieval/sagas';
 import { TYPES } from 'redux-retrieval/actions';
 import { reset } from 'redux-form';
-import { find } from '../mock-server';
+import { retrieve } from '../mock-server';
 
 export default function* rootSaga() {
   yield [
     retrieveSaga({
-      apiClient: { find: mockRetrieve },
+      service: { retrieve: mockRetrieve },
     }),
     takeLatest(TYPES.RETRIEVE_SUCCESS, resetForm),
     takeLatest(TYPES.RETRIEVE_ERROR, notifyError),
   ];
 }
 
-export function* mockRetrieve(conditions) {
-  console.log('mock api calling: ', conditions);
-  return yield delay(600, find(conditions));
+export function* mockRetrieve(conditions, { pageNumber }) {
+  console.log('mock api calling: ', conditions, pageNumber);
+  return yield delay(600, retrieve({
+    ...conditions,
+    pageNumber,
+  }));
 }
 
 export function notifyError() {
-
+  console.log('retrieve error');
 }
 
 export function* resetForm() {

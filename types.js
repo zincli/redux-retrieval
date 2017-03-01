@@ -12,7 +12,7 @@ function types() {
   }
 
   names.forEach(function (name) {
-    result[name] = "@@REDUX/RETRIEVAL/" + name;
+    result[name] = "@@redux-retrieval/" + name;
   });
 
   return result;
