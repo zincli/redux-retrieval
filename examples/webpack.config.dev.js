@@ -32,7 +32,13 @@ module.exports = {
         loaders: loaders
     },
     resolve: {
-      extensions: ['', '.js', '.jsx', '.es6']
+      extensions: ['', '.js', '.jsx', '.es6'],
+      alias: {
+        'redux-retrieval': path.resolve(__dirname, '../src')
+      }
+    },
+    resolveLoader: {
+      root: path.join(__dirname, 'node_modules')
     },
     plugins: [
 

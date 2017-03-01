@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.asyncProcessEnd = exports.asyncProcessStart = exports.turnPage = exports.reRetrieve = exports.recordConditions = exports.retrieveError = exports.retrieveSuccess = exports.retrieve = exports.TYPES = undefined;
+exports.turnPage = exports.reRetrieve = exports.recordConditions = exports.retrieveError = exports.retrieveSuccess = exports.retrieve = exports.TYPES = undefined;
 
 var _reduxActions = require('redux-actions');
 
@@ -13,7 +13,7 @@ var _types2 = _interopRequireDefault(_types);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var TYPES = exports.TYPES = (0, _types2.default)('RETRIEVE', 'RETRIEVE_SUCCESS', 'RETRIEVE_ERROR', 'RECORD_CONDITIONS', 'RE_RETRIEVE', 'TURN_PAGE', 'ASYNC_PROCESS_START', 'ASYNC_PROCESS_END');
+var TYPES = exports.TYPES = (0, _types2.default)('RETRIEVE', 'RETRIEVE_SUCCESS', 'RETRIEVE_ERROR', 'RECORD_CONDITIONS', 'RE_RETRIEVE', 'TURN_PAGE');
 
 var retrieve = exports.retrieve = (0, _reduxActions.createAction)(TYPES.RETRIEVE, undefined, function (_, meta) {
   return meta;
@@ -23,6 +23,3 @@ var retrieveError = exports.retrieveError = (0, _reduxActions.createAction)(TYPE
 var recordConditions = exports.recordConditions = (0, _reduxActions.createAction)(TYPES.RECORD_CONDITIONS);
 var reRetrieve = exports.reRetrieve = (0, _reduxActions.createAction)(TYPES.RE_RETRIEVE);
 var turnPage = exports.turnPage = (0, _reduxActions.createAction)(TYPES.TURN_PAGE);
-
-var asyncProcessStart = exports.asyncProcessStart = (0, _reduxActions.createAction)(TYPES.ASYNC_PROCESS_START);
-var asyncProcessEnd = exports.asyncProcessEnd = (0, _reduxActions.createAction)(TYPES.ASYNC_PROCESS_END);

@@ -4,11 +4,11 @@ import { Provider } from 'react-redux';
 import { retrieveSuccess } from 'redux-retrieval/actions';
 import App from './containers';
 import initStore from './store';
-import { find } from './mock-server';
+import { retrieve } from './mock-server';
 
 const store = initStore();
 
-store.dispatch(retrieveSuccess(find({})));
+store.dispatch(retrieveSuccess(retrieve({})));
 
 ReactDom.render(
   <Provider store={store}>

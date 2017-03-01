@@ -20,9 +20,11 @@ export function retrievedResult(state = {}, action = {}) {
 
 export function asyncProcessing(state = false, action = {}) {
   switch (action.type) {
-    case TYPES.ASYNC_PROCESS_START:
+    case TYPES.RETRIEVE:
+    case TYPES.TURN_PAGE:
       return true;
-    case TYPES.ASYNC_PROCESS_END:
+    case TYPES.RETRIEVE_SUCCESS:
+    case TYPES.RETRIEVE_ERROR:
       return false;
     default:
       return state;

@@ -4,9 +4,33 @@
 [![Codecov](https://img.shields.io/codecov/c/github/zincli/redux-retrieval.svg?style=flat-square)](https://codecov.io/gh/zincli/redux-retrieval)
 
 
-reusable actions, reducers and sagas for retrieval application
+reusable actions, reducers, selectors and sagas for retrieval application
 
-// documents are coming
+`redux-retrieval` is a library that aims to make retrieval applications
+(i.e. an order list page or a user management page)
+developing easier,
+inspired by
+[react-router-redux](https://github.com/reactjs/react-router-redux),
+[redux-saga](https://github.com/redux-saga/redux-saga)
+and [redux-form](https://github.com/erikras/redux-form).
+
+
+## Why `redux-retrieval`
+
+`redux-retrieval` extracted the common pattern in retrieval applications as
+reusable actions, reducers, selectors and sagas (impure things handler).
+You could built your retrieval application by only composing these with some components and
+writing a little code necessary. (For existed projects, it could remove some boilerplate code.)
+
+// More explanations work in progress.
+
+## Getting Started
+
+### combine reducers
+
+### deploy sagas
+
+### connect actions
 
 
 ## Examples

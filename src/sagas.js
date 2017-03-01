@@ -11,7 +11,6 @@ import { attach, update, drop } from './conditions-helper';
 import { actionError } from './errors';
 
 export const defaultOptions = {
-  pageNumberParam: 'pageNumber',
   retrievedConditionsSelector: state => state.retrievedConditions
 };
 
@@ -31,16 +30,13 @@ export default function* watchRetrievalActions(options = {}) {
   ]
 }
 
-export function* retrieve({ apiClient }, conditions) {
+export function* retrieve({ service }, conditions, meta = {}) {
   try {
-    yield put(asyncProcessStart());
-    const retrievedResult = yield call([apiClient, apiClient.find], conditions);
+    const retrievedResult = yield call([service, service.retrieve], conditions, meta);
     yield put(retrieveSuccess(retrievedResult));
     yield put(recordConditions(conditions));
   } catch (e) {
     yield put(retrieveError(e));
-  } finally {
-    yield put(asyncProcessEnd());
   }
 }
 
@@ -69,10 +65,7 @@ export function* handleRetrieve(options, action) {
     conditions = payload;
   }
 
-  yield call(retrieve, options, {
-    ...conditions,
-    ...resetPaginationParams(options)
-  });
+  yield call(retrieve, options, conditions, { pageNumber: 1 });
 }
 
 export function* handleReRetrieve(options, action) {
@@ -82,18 +75,5 @@ export function* handleReRetrieve(options, action) {
 
 export function* handleTurnPage(options, action) {
   const retrievedConditions = yield select(options.retrievedConditionsSelector);
-  yield call(retrieve, options, {
-    ...retrievedConditions,
-    ...createPaginationParams(options, action.payload)
-  });
-}
-
-function createPaginationParams(options, pageNumber) {
-  return {
-    [options.pageNumberParam]: pageNumber
-  };
-}
-
-function resetPaginationParams(options) {
-  return createPaginationParams(options, 1);
+  yield call(retrieve, options, retrievedConditions, { pageNumber: action.payload });
 }
