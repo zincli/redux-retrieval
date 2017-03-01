@@ -35,4 +35,6 @@ writing a little code necessary. (For existed projects, it could remove some boi
 
 ## Examples
 
-* [traditional list page](./examples/traditional/)
+These examples' codes could be found in [examples dir](./examples).
+
+* [traditional list page](https://zincli.github.io/redux-retrieval/examples/traditional/)
