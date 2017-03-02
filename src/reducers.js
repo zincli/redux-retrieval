@@ -3,7 +3,7 @@ import { TYPES } from './actions';
 export function retrievedConditions(state = {}, action = {}) {
   switch (action.type) {
     case TYPES.RECORD_CONDITIONS:
-      return action.payload;
+      return action.payload || state;
     default:
       return state;
   }
@@ -12,13 +12,13 @@ export function retrievedConditions(state = {}, action = {}) {
 export function retrievedResult(state = {}, action = {}) {
   switch (action.type) {
     case TYPES.RETRIEVE_SUCCESS:
-      return action.payload;
+      return action.payload || state;
     default:
       return state;
   }
 }
 
-export function asyncProcessing(state = false, action = {}) {
+export function retrieving(state = false, action = {}) {
   switch (action.type) {
     case TYPES.RETRIEVE:
     case TYPES.TURN_PAGE:
@@ -34,5 +34,5 @@ export function asyncProcessing(state = false, action = {}) {
 export default ({
   retrievedConditions,
   retrievedResult,
-  asyncProcessing,
+  retrieving,
 });

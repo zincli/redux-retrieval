@@ -20,6 +20,7 @@ var loaders = [
 module.exports = {
     cache: true,
     entry: {
+      'beginner-tutorial': ['babel-polyfill', './beginner-tutorial/src/index.jsx'],
       traditional: ['babel-polyfill', './traditional/src/index.jsx']
     },
     output: {
@@ -34,7 +35,8 @@ module.exports = {
     resolve: {
       extensions: ['', '.js', '.jsx', '.es6'],
       alias: {
-        'redux-retrieval': path.resolve(__dirname, '../src')
+        'redux-retrieval': path.resolve(__dirname, '../src'),
+        sharing: path.resolve(__dirname, 'sharing'),
       }
     },
     resolveLoader: {

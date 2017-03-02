@@ -31,21 +31,21 @@ describe('reducers', () => {
         should.equal(retrievedResult);
     });
   });
-  describe('.asyncProcessing(state, action)', () => {
+  describe('.retrieving(state, action)', () => {
     it('should return false by default', () => {
-      reducers.asyncProcessing().should.equal(false);
+      reducers.retrieving().should.equal(false);
     });
     it('should return false while having a retrieveSuccess action', () => {
-      reducers.asyncProcessing(true, retrieveSuccess()).should.equal(false);
+      reducers.retrieving(true, retrieveSuccess()).should.equal(false);
     });
     it('should return false while having a retrieveError action', () => {
-      reducers.asyncProcessing(true, retrieveError()).should.equal(false);
+      reducers.retrieving(true, retrieveError()).should.equal(false);
     });
     it('should return true while having a retrieve action', () => {
-      reducers.asyncProcessing(false, retrieve()).should.equal(true);
+      reducers.retrieving(false, retrieve()).should.equal(true);
     });
     it('should return true while having a turnPage action', () => {
-      reducers.asyncProcessing(false, turnPage()).should.equal(true);
+      reducers.retrieving(false, turnPage()).should.equal(true);
     });
   });
 });

@@ -1,6 +1,7 @@
 {
   "private": true,
   "scripts": {
+    "tutorial": "webpack-dev-server --config beginner-tutorial/webpack.config.js",
     "start": "webpack-dev-server --config webpack.config.dev.js",
     "build": "webpack --config webpack.config.prod.js"
   },
@@ -18,6 +19,7 @@
     "react-dom": "^15.4.2",
     "react-redux": "^5.0.2",
     "react-tap-event-plugin": "^2.0.1",
+    "reduce-reducers": "^0.1.2",
     "redux": "^3.6.0",
     "redux-devtools-extension": "^2.13.0",
     "redux-form": "^6.5.0",
