@@ -3,7 +3,7 @@ import { takeLatest, put } from 'redux-saga/effects';
 import retrieveSaga from 'redux-retrieval/sagas';
 import { TYPES } from 'redux-retrieval/actions';
 import { reset } from 'redux-form';
-import { retrieve } from '../mock-server';
+import { retrieve } from 'sharing/mock-server';
 
 export default function* rootSaga() {
   yield [

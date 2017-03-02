@@ -24,13 +24,10 @@ writing a little code necessary. (For existed projects, it could remove some boi
 
 // More explanations work in progress.
 
-## Getting Started
+## Documents
 
-### combine reducers
-
-### deploy sagas
-
-### connect actions
+* Beginner Tutorial
+ - [中文](https://zincli.github.io/redux-retrieval/docs/zh/_book/tutorial.html)
 
 
 ## Examples
