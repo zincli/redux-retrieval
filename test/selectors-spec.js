@@ -1,4 +1,4 @@
-import { makeArray } from '../src/selectors';
+import { makeArray, conditions, page } from '../src/selectors';
 
 describe('selectors', () => {
   describe('.makeArray(conditions)', () => {
@@ -23,6 +23,19 @@ describe('selectors', () => {
     });
     it('conditions are required', () => {
       expect(makeArray).to.throw();
+    });
+  });
+
+  describe('.conditions(state)', () => {
+    it('should return the state.retrievedConditions.explicit proccessed by makeArray', () => {
+      const state = { retrievedConditions: { explicit: {} }};
+      conditions(state).should.eql(makeArray(state.retrievedConditions.explicit));
+    });
+  });
+  describe('.page(state)', () => {
+    it('should return the state.retrievedConditions.page', () => {
+      const state = { retrievedConditions: { page: 1 }};
+      page(state).should.eql(state.retrievedConditions.page);
     });
   });
 });

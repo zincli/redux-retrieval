@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { retrieve } from 'redux-retrieval/actions';
-import { makeArray } from 'redux-retrieval/selectors';
+import { conditions } from 'redux-retrieval/selectors';
 import { Tag } from 'antd';
 
 export function Conditions(props) {
@@ -23,7 +23,7 @@ export function Conditions(props) {
 }
 
 export default connect(
-  state => ({ data: makeArray(state.retrievedConditions) }),
+  state => ({ data: conditions(state) }),
   dispatch => ({
     onClose: condition => dispatch(
       retrieve({ [condition.name]: condition.value }, { drop: true })

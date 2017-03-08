@@ -14,6 +14,8 @@ $ npm run tutorial
 
 现在访问 [http://localhost:8080/beginner-tutorial/](http://localhost:8080/beginner-tutorial/) 就能看到示例应用的样子了。
 
+![](captures/tutorial-head.png)
+
 这个示例应用是一个典型的带检索条件表单的列表页面，但是目前只是由组件拼出了页面结构，
 当你点击搜索按钮或者翻页按钮，还只是通过`console.log()`来输出一些信息。
 
@@ -68,13 +70,18 @@ export default connect(
 
 ```js
 // ...
+// 引入 turnPage 动作
 import { turnPage } from 'redux-retrieval/actions';
+// 引入 page selector
+import { page } from 'redux-retrieval/selectors';
 
 // ...
 
 export default connect(
   state => ({
-    // ...
+    total: state.appData.total || 0,
+    // 给分页组件设置当前页码，如果没给出则处理为1
+    current: page(state) || 1,
   }),
   dispatch => ({
     onChange: page => dispatch(turnPage(page))
@@ -84,9 +91,9 @@ export default connect(
 ```
 
 
-## 部署动作处理器
+## 设置动作处理器
 
-刚刚部署好的检索和翻页动作，只是纯粹的发出了一个动作，现在还没有什么作用。因此还需要对应的处理器来进行实际的动作响应。
+刚刚绑定好的检索和翻页动作，只是纯粹的发出了一个动作，现在还没有什么作用。因此还需要对应的处理器来进行实际的动作响应。
 而这其中有些处理是同步的，有些是异步的，`reducers`就来负责处理同步的动作，`sagas`则来负责处理异步动作。
 （如果你还不了解`redux-saga`，并没有关系，目前只需要知道它是负责处理一些“不纯粹”的事情的，比如异步接口调用）
 
@@ -100,10 +107,13 @@ export default connect(
 ```js
 import { combineReducers } from 'redux';
 import { reducer as form } from 'redux-form'
+// 引入 retrievedResult reducer
 import { retrievedResult } from 'redux-retrieval/reducers';
 
 export default combineReducers({
   form,
+  // 此处为了便于理解，不更改原有的属性名 appData，
+  // 如果是新做一个应用，推荐直接使用 retrievedResult 做属性名
   appData: retrievedResult,
 });
 
@@ -126,12 +136,12 @@ import { retrieve } from 'sharing/mock-server';
 
 // 假装我们有一个去远程服务器进行数据检索的服务
 const service = {
-  retrieve: (conditions, { pageNumber }) => {
+  retrieve: (conditions, { page }) => {
     return new Promise((resolve) => {
       setTimeout(() => {
         resolve(retrieve({
           ...conditions,
-          pageNumber,
+          pageNumber: page,
         }))
       }, 600)
     })
@@ -146,12 +156,12 @@ export default function* rootSaga() {
 
 ```
 
-其中`retrieveSaga`做的事情就是监听检索和翻页动作，进行一些必要的逻辑处理后实际进行检索请求。
+其中`retrieveSaga`做的事情就是监听检索和翻页等动作，进行一些必要的逻辑处理后实际进行检索请求。
 然而由于各类项目差异较大（数据源不同、异步请求库不同等），`redux-retrieval`将实际对数据源进行检索的处理交由开发者去实现。
 
 `retrieveSaga(options)`接受一个`service`(检索服务)对象参数：
 
-* 当检索或分页动作发起后，`retrieveSaga`将调用该检索服务，传入检索参数和分页参数。
+* 当检索或分页动作发起后，`retrieveSaga`将调用该检索服务，传入检索参数和分页参数。分页参数`page`单独给出的是因为`redux-retrieval`内部逻辑会修改分页参数的值，但是又需要让开发者可以指定请求中分页参数的名字。
 * 当该检索服务取到检索结果后，`retrieveSaga`将检索结果存储到`store`中。
 
 由于检索大多数是异步的，所以`service.retrieve`的返回值至少需要是一个`Promise`对象。

@@ -1,17 +1,16 @@
 import { take, takeLatest, put, call, select } from 'redux-saga/effects';
 import {
   TYPES,
+  retrieve,
   retrieveSuccess,
   retrieveError,
   recordConditions,
-  asyncProcessStart,
-  asyncProcessEnd,
 } from './actions';
-import { attach, update, drop } from './conditions-helper';
-import { actionError } from './errors';
+import { calculateConditions } from './conditions-helper';
 
 export const defaultOptions = {
-  retrievedConditionsSelector: state => state.retrievedConditions
+  retrievedConditionsSelector: state => state.retrievedConditions,
+  service: {},
 };
 
 /**
@@ -25,55 +24,47 @@ export default function* watchRetrievalActions(options = {}) {
   options = { ...defaultOptions, ...options };
   yield [
     takeLatest(TYPES.RETRIEVE, handleRetrieve, options),
-    takeLatest(TYPES.RE_RETRIEVE, handleReRetrieve, options),
-    takeLatest(TYPES.TURN_PAGE, handleTurnPage, options),
+    takeLatest(TYPES.RE_RETRIEVE, handleReRetrieve),
+    takeLatest(TYPES.TURN_PAGE, handleTurnPage),
+    takeLatest(TYPES.SWITCH_PAGE_SIZE, handleSwitchPageSize),
+    takeLatest(TYPES.SWITCH_TAB, handleSwitchTab),
   ]
 }
 
-export function* retrieve({ service }, conditions, meta = {}) {
+export function* handleRetrieve(options, action) {
+  const { payload, meta } = action;
+  const { service, retrievedConditionsSelector } = options;
+
   try {
-    const retrievedResult = yield call([service, service.retrieve], conditions, meta);
+    const retrievedConditions = yield select(retrievedConditionsSelector);
+    const { explicit, implicit, page } = yield call(calculateConditions, meta, payload, retrievedConditions);
+    const retrievedResult = yield call(
+      [service, service.retrieve],
+      {
+        ...explicit,
+        ...implicit,
+      },
+      { page }
+    );
     yield put(retrieveSuccess(retrievedResult));
-    yield put(recordConditions(conditions));
+    yield put(recordConditions({ explicit, implicit, page }));
   } catch (e) {
     yield put(retrieveError(e));
   }
 }
 
-export function* handleRetrieve(options, action) {
-  const { payload, meta } = action;
-  let conditions;
-
-  if (meta && Object.keys(meta).length > 0) {
-    const retrievedConditions = yield select(options.retrievedConditionsSelector);
-
-    if (meta.attach) {
-      conditions = attach(retrievedConditions, payload);
-    } else if (meta.update) {
-      conditions = update(retrievedConditions, payload);
-    } else if (meta.drop) {
-      conditions = drop(retrievedConditions, payload);
-    } else {
-      throw new Error(
-        actionError(
-          action,
-          `unavailable meta options: ${JSON.stringify(action.meta)}`
-        )
-      );
-    }
-  } else {
-    conditions = payload;
-  }
-
-  yield call(retrieve, options, conditions, { pageNumber: 1 });
+export function* handleReRetrieve() {
+  yield put(retrieve({}, { implicitly: true, keepExplicit: true }));
 }
 
-export function* handleReRetrieve(options, action) {
-  const conditions = yield select(options.retrievedConditionsSelector);
-  yield call(retrieve, options, conditions);
+export function* handleTurnPage({ payload }) {
+  yield put(retrieve({}, { implicitly: true, keepExplicit: true, page: payload }));
 }
 
-export function* handleTurnPage(options, action) {
-  const retrievedConditions = yield select(options.retrievedConditionsSelector);
-  yield call(retrieve, options, retrievedConditions, { pageNumber: action.payload });
+export function* handleSwitchPageSize({ payload, meta }) {
+  yield put(retrieve({ [meta.name || 'pageSize']: payload }, { implicitly: true, keepExplicit: true, page: 1 }));
+}
+
+export function* handleSwitchTab({ payload, meta }) {
+  yield put(retrieve({ [meta.name || 'tab']: payload }, { implicitly: true, page: 1 }));
 }

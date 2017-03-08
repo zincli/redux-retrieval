@@ -2,22 +2,23 @@ import { takeLatest, put, call, select } from 'redux-saga/effects';
 
 import watchRetrievalActions, {
   defaultOptions,
-  retrieve,
   handleRetrieve,
   handleReRetrieve,
   handleTurnPage,
+  handleSwitchPageSize,
+  handleSwitchTab,
 } from '../src/sagas';
 
 import {
   TYPES,
-  asyncProcessStart,
-  asyncProcessEnd,
-  retrieve as retrieveAction,
+  retrieve,
   reRetrieve,
   turnPage,
   retrieveSuccess,
   recordConditions,
   retrieveError,
+  switchPageSize,
+  switchTab,
 } from '../src/actions';
 
 import * as helper from '../src/conditions-helper';
@@ -38,8 +39,10 @@ describe('sagas', () => {
 
       watchRetrievalActions(options).next().value.should.eql([
         takeLatest(TYPES.RETRIEVE, handleRetrieve, mergedOptions),
-        takeLatest(TYPES.RE_RETRIEVE, handleReRetrieve, mergedOptions),
-        takeLatest(TYPES.TURN_PAGE, handleTurnPage, mergedOptions),
+        takeLatest(TYPES.RE_RETRIEVE, handleReRetrieve),
+        takeLatest(TYPES.TURN_PAGE, handleTurnPage),
+        takeLatest(TYPES.SWITCH_PAGE_SIZE, handleSwitchPageSize),
+        takeLatest(TYPES.SWITCH_TAB, handleSwitchTab),
       ]);
     });
     it('should use default options while options argument not given', () => {
@@ -48,114 +51,97 @@ describe('sagas', () => {
       );
     });
   });
-  describe('.retrieve(options, conditions, meta)', () => {
+  describe('.handleRetrieve(options, action)', () => {
     const service = { retrieve: () => {} };
+    const options = { ...defaultOptions, service };
     const conditions = { foo: 'bar' };
     const meta = { bar: 'baz' };
+    const retrievedConditions = {};
+    const calculatedConditions = {
+      explicit: { foo: 'foo' },
+      implicit: { bar: 'bar' },
+      page: undefined,
+    };
     let gen;
 
     before(() => {
-      gen = retrieve({ service }, conditions, meta);
+      gen = handleRetrieve(options, retrieve(conditions, meta));
     });
 
-    it('should call the service.retrieve to do the retrieving', () => {
-      gen.next().value.should.eql(call([service, service.retrieve], conditions, meta));
-    });
-    it('should put the retrieveSuccess action while api return success', () => {
-      const retrievedResult = { bar: 'baz' };
-
-      gen.next(retrievedResult).value.should.eql(put(retrieveSuccess(retrievedResult)));
-    });
-    it('should put a recordConditions action then to record the retrieval conditions', () => {
-      gen.next().value.should.eql(put(recordConditions(conditions)));
-    });
-    it('should put a retrieveError action while having a failed api call', () => {
-      const generator = retrieve({ service }, conditions);
-      const e = new Error('an error from apiClient.find');
-
-      // put asyncProcessStart
-      generator.next();
-      // call apiClient.find
-      generator.next();
-      // get an error from apiClient.find
-      generator.throw(e).value.should.eql(put(retrieveError(e)));
-    });
-  });
-  describe('.handleRetrieve(options, action)', () => {
-    describe('handle simple retrieve action', () => {
-      it('should call the .retrieve(options, conditions)', () => {
-        const conditions = { foo: 'bar' };
-        const gen = handleRetrieve(defaultOptions, retrieveAction(conditions));
-
-        gen.next().value.should.eql(
-          call(retrieve, defaultOptions, conditions, { pageNumber: 1 })
-        );
-      });
-    });
-    describe('handle retrieve action with meta info', () => {
-      const conditions = { foo: 'bar' };
-      const retrievedConditions = { foo: 'foo' };
-
-      it('should get the retrievedConditions first', () => {
-        const gen = handleRetrieve(defaultOptions, retrieveAction(conditions, { attach: true }));
-
+    describe('normal processing', () => {
+      it('should select the retrievedConditions from state', () => {
         gen.next().value.should.eql(select(defaultOptions.retrievedConditionsSelector));
       });
-
-      ['attach', 'update', 'drop'].forEach((op) => {
-        it(`should get .retrieve() called right with meta.${op}`, () => {
-          const gen = handleRetrieve(defaultOptions, retrieveAction(conditions, { [op]: true }));
-
-          gen.next();
-          gen.next(retrievedConditions).value.should.eql(call(
-            retrieve,
-            defaultOptions,
-            helper[op](retrievedConditions, conditions),
-            { pageNumber: 1 }
-          ));
-        });
+      it('should call the calculateConditions() to get the explicit and implicit conditions', () => {
+        gen.next(retrievedConditions).value.should.eql(
+          call(helper.calculateConditions, meta, conditions, retrievedConditions)
+        );
       });
+      it('should call the service.retrieve to do the retrieving', () => {
+        gen.next(calculatedConditions).value.should.eql(
+          call([service, service.retrieve], {
+            foo: 'foo',
+            bar: 'bar',
+          }, {
+            page: undefined
+          })
+        );
+      });
+      it('should put the retrieveSuccess action while api return success', () => {
+        const retrievedResult = { bar: 'baz' };
 
-      it('should throw error if given unavailable meta options', () => {
-        function callHandleRetrieveWithUnavailableMeta() {
-          const gen = handleRetrieve(defaultOptions, retrieveAction(conditions, { unavailableProp: true }));
+        gen.next(retrievedResult).value.should.eql(put(retrieveSuccess(retrievedResult)));
+      });
+      it('should put a recordConditions action then to record the retrieval conditions', () => {
+        gen.next().value.should.eql(put(recordConditions(calculatedConditions)));
+      });
+    });
+    describe('error handling', () => {
+      it('should put a retrieveError action while having a failed api call', () => {
+        gen = handleRetrieve(options, retrieve(conditions, meta));
+        const e = new Error('an error from service.retrieve()');
 
-          gen.next();
-          gen.next(retrievedConditions);
-        }
-        expect(callHandleRetrieveWithUnavailableMeta).to.throw();
+        // select the retrievedConditions
+        gen.next();
+        // call the calculateConditions()
+        gen.next(retrievedConditions);
+        // call the service.retrieve()
+        gen.next(calculatedConditions);
+        // get an error from last call
+        gen.throw(e).value.should.eql(put(retrieveError(e)));
       });
     });
   });
   describe('.handleReRetrieve(options, action)', () => {
-    const conditions = { foo: 'bar' };
-    const gen = handleReRetrieve(defaultOptions, reRetrieve());
-
-    it('should get the retrievedConditions first', () => {
-      gen.next().value.should.eql(select(defaultOptions.retrievedConditionsSelector));
-    });
-    it('should call .retrieve() then', () => {
-      gen.next(conditions).value.should.eql(call(
-        retrieve,
-        defaultOptions,
-        conditions
-      ))
+    it('should put the retrieve action with specific meta options', () => {
+      const gen = handleReRetrieve(reRetrieve());
+      gen.next().value.should.eql(put(retrieve({}, { implicitly: true, keepExplicit: true })));
     });
   });
-  describe('.handleTurnPage(options, action)', () => {
-    const conditions = { foo: 'bar' };
-    const gen = handleTurnPage(defaultOptions, turnPage(3));
-
-    it('should get the retrievedConditions first', () => {
-      gen.next().value.should.eql(select(defaultOptions.retrievedConditionsSelector));
+  describe('.handleTurnPage(action)', () => {
+    it('should put the retrieve action with specific meta options', () => {
+      const gen = handleTurnPage(turnPage(3));
+      gen.next().value.should.eql(put(retrieve({}, { implicitly: true, keepExplicit: true, page: 3 })));
     });
-    it('should call .retrieve() then', () => {
-      gen.next(conditions).value.should.eql(call(
-        retrieve,
-        defaultOptions,
-        { foo: 'bar' },
-        { pageNumber: 3 }
-      ))
+  });
+  describe('.handleSwitchPageSize(action)', () => {
+    it('should put the retrieve action with specific meta options', () => {
+      const gen = handleSwitchPageSize(switchPageSize(10));
+      gen.next().value.should.eql(put(retrieve({ pageSize: 10 }, { implicitly: true, keepExplicit: true, page: 1 })));
+    });
+    it('should put the retrieve action with specific meta.name', () => {
+      const gen = handleSwitchPageSize(switchPageSize(10, { name: 'customPageSize' }));
+      gen.next().value.should.eql(put(retrieve({ customPageSize: 10 }, { implicitly: true, keepExplicit: true, page: 1 })));
+    });
+  });
+  describe('.handleSwitchTab(action)', () => {
+    it('should put the retrieve action with specific meta options', () => {
+      const gen = handleSwitchTab(switchTab('foo'));
+      gen.next().value.should.eql(put(retrieve({ tab: 'foo' }, { implicitly: true, page: 1 })));
+    });
+    it('should put the retrieve action with specific meta.name', () => {
+      const gen = handleSwitchTab(switchTab('foo', { name: 'customTab' }));
+      gen.next().value.should.eql(put(retrieve({ customTab: 'foo' }, { implicitly: true, page: 1 })));
     });
   });
 });

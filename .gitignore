@@ -1,5 +1,7 @@
 # node
 node_modules
 # coverage dir
-./coverage
+coverage
 .nyc_output
+
+.DS_Store

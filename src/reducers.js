@@ -1,18 +1,25 @@
+import { handleAction } from 'redux-actions';
 import { TYPES } from './actions';
 
-export function retrievedConditions(state = {}, action = {}) {
-  switch (action.type) {
-    case TYPES.RECORD_CONDITIONS:
-      return action.payload || state;
-    default:
-      return state;
-  }
+const defaultRetrievedConditions = {
+  explicit: {},
+  implicit: {},
 }
+
+export const retrievedConditions = handleAction(
+  TYPES.RECORD_CONDITIONS,
+  (state, { payload = {} }) => ({
+    explicit: payload.explicit || {},
+    implicit: payload.implicit || {},
+    page: payload.page,
+  }),
+  { explicit: {}, implicit: {}, page: undefined },
+);
 
 export function retrievedResult(state = {}, action = {}) {
   switch (action.type) {
     case TYPES.RETRIEVE_SUCCESS:
-      return action.payload || state;
+      return action.payload || {};
     default:
       return state;
   }
@@ -21,7 +28,6 @@ export function retrievedResult(state = {}, action = {}) {
 export function retrieving(state = false, action = {}) {
   switch (action.type) {
     case TYPES.RETRIEVE:
-    case TYPES.TURN_PAGE:
       return true;
     case TYPES.RETRIEVE_SUCCESS:
     case TYPES.RETRIEVE_ERROR:

@@ -17,6 +17,7 @@ export function List(props) {
         <Table.Column key="name" title="Name" dataIndex="name" />
         <Table.Column key="type" title="Type" dataIndex="type" />
         <Table.Column key="price" title="Price" dataIndex="price" />
+        <Table.Column key="series" title="Series" dataIndex="series" />
       </Table>
     </Spin>
   )
