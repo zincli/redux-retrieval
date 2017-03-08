@@ -1,0 +1,6 @@
+{
+  "scripts": {
+    "zh": "gitbook build zh zh/book",
+    "serve": "gitbook serve"
+  }
+}

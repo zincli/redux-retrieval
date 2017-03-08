@@ -1,46 +1,58 @@
 import React from 'react';
 import 'antd/dist/antd.css';
 
+import Layout from 'sharing/layout';
+
+import Tabs from './tabs';
 import Form from './form';
 import Conditions from './conditions';
 import List from './list';
 import Pagination from './pagination';
 import BatchDelete from './batch-delete';
+import Refresh from './refresh';
 
 const styles = {
-  container: {
-    width: 1200,
-    margin: '20px auto'
-  },
-  title: {
-    marginBottom: 30
-  },
-  conditions: {
-    margin: '20px 0'
-  },
-  pagination: {
-    margin: '20px 0'
-  },
-  batch: {
-    margin: '40px 0 20px 0'
+  operations: {
+
   },
   batchLabel: {
     marginRight: 20
+  },
+  opBtn: {
+    marginRight: 10
   }
 };
 
 export default (props) => {
   return (
-    <div style={styles.container}>
-      <h1 style={styles.title}>Simple List App using redux-retrieval</h1>
-      <Form />
-      <Conditions style={styles.conditions} />
-      <div style={styles.batch}>
-        <span style={styles.batchLabel}>Operations: </span>
-        <BatchDelete>Delete</BatchDelete>
-      </div>
-      <List />
-      <Pagination style={styles.pagination} defaultCurrent={1} />
-    </div>
+    <Layout
+      title={'Simple List App using redux-retrieval'}
+      tabs={
+        <Tabs defaultActiveKey="" dataSource={[
+          { key: '', label: 'All' },
+          { key: 'Seed', label: 'Seed' },
+          { key: 'Seed Destiny', label: 'Seed Destiny' },
+          { key: 'UC', label: 'UC' },
+        ]} />
+      }
+      form={<Form />}
+      conditions={<Conditions />}
+      operations={
+        <div style={styles.operations}>
+          <span style={styles.batchLabel}>Operations: </span>
+          <BatchDelete style={styles.opBtn}>Delete</BatchDelete>
+          <Refresh>Refresh</Refresh>
+        </div>
+      }
+      list={<List />}
+      pagination={
+        <Pagination
+          style={styles.pagination}
+          showSizeChanger
+          pageSizeOptions={['3', '5', '10']}
+          defaultPageSize={3}
+        />
+      }
+    />
   );
 }

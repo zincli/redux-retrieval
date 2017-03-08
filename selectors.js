@@ -1,9 +1,15 @@
-"use strict";
+'use strict';
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.makeArray = makeArray;
+exports.explicit = explicit;
+exports.conditions = conditions;
+exports.page = page;
+
+var _sagas = require('./sagas');
+
 /**
  * transform object conditions into array conditions
  * @param  {Object} conditions
@@ -27,6 +33,21 @@ function makeArray(conditions) {
   return result;
 }
 
+function explicit(retrievedConditions) {
+  return retrievedConditions.explicit;
+}
+
+function conditions(state) {
+  return makeArray(explicit(_sagas.defaultOptions.retrievedConditionsSelector(state)));
+}
+
+function page(state) {
+  return _sagas.defaultOptions.retrievedConditionsSelector(state).page;
+}
+
 exports.default = {
-  makeArray: makeArray
+  makeArray: makeArray,
+  explicit: explicit,
+  conditions: conditions,
+  page: page
 };

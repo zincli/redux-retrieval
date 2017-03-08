@@ -9,14 +9,22 @@ import {
 
 describe('reducers', () => {
   describe('.retrievedConditions(state, action)', () => {
-    it('should return {} by default', () => {
-      reducers.retrievedConditions().should.eql({});
+    it('should return { explicit: {}, implicit: {}, page: undefined } by default', () => {
+      reducers.retrievedConditions(undefined, recordConditions()).should.eql({
+        explicit: {},
+        implicit: {},
+        page: undefined,
+      });
     });
     it('should handle the recordConditions action', () => {
-      const newConditions = { bar: 'bar' };
+      const newConditions = {
+        explicit: { bar: 'bar' },
+        implicit: { foo: 'foo' },
+        page: 1
+      };
       reducers.
         retrievedConditions({ foo: 'foo' }, recordConditions(newConditions)).
-        should.equal(newConditions);
+        should.eql(newConditions);
     });
   });
   describe('.retrievedResult(state, action)', () => {
@@ -29,6 +37,11 @@ describe('reducers', () => {
       reducers.
         retrievedResult({ foo: 'foo' }, retrieveSuccess(retrievedResult)).
         should.equal(retrievedResult);
+    });
+    it('should return {} while given retrieveSuccess(undefined)', () => {
+      reducers.
+        retrievedResult({ foo: 'foo' }, retrieveSuccess()).
+        should.eql({});
     });
   });
   describe('.retrieving(state, action)', () => {
@@ -43,9 +56,6 @@ describe('reducers', () => {
     });
     it('should return true while having a retrieve action', () => {
       reducers.retrieving(false, retrieve()).should.equal(true);
-    });
-    it('should return true while having a turnPage action', () => {
-      reducers.retrieving(false, turnPage()).should.equal(true);
     });
   });
 });

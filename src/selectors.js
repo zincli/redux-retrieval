@@ -1,3 +1,5 @@
+import { defaultOptions } from './sagas';
+
 /**
  * transform object conditions into array conditions
  * @param  {Object} conditions
@@ -19,6 +21,21 @@ export function makeArray(conditions) {
   return result;
 }
 
+export function explicit(retrievedConditions) {
+  return retrievedConditions.explicit;
+}
+
+export function conditions(state) {
+  return makeArray(explicit(defaultOptions.retrievedConditionsSelector(state)));
+}
+
+export function page(state) {
+  return defaultOptions.retrievedConditionsSelector(state).page;
+}
+
 export default ({
-  makeArray
+  makeArray,
+  explicit,
+  conditions,
+  page,
 })

@@ -15,12 +15,9 @@ export default function* rootSaga() {
   ];
 }
 
-export function* mockRetrieve(conditions, { pageNumber }) {
-  console.log('mock api calling: ', conditions, pageNumber);
-  return yield delay(600, retrieve({
-    ...conditions,
-    pageNumber,
-  }));
+export function* mockRetrieve(conditions, { page }) {
+  console.log('mock api calling: ', conditions, page);
+  return yield delay(600, retrieve({ ...conditions, pageNumber: page }));
 }
 
 export function notifyError() {
