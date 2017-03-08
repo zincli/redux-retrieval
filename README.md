@@ -26,8 +26,7 @@ writing a little code necessary. (For existed projects, it could remove some boi
 
 ## Documents
 
-* Beginner Tutorial
- - [中文](https://zincli.github.io/redux-retrieval/docs/zh/book/tutorial.html)
+* [中文](https://zincli.github.io/redux-retrieval/docs/zh/book/)
 
 
 ## Examples
