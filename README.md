@@ -1,5 +1,7 @@
 # redux-retrieval
 
+[![npm](https://img.shields.io/npm/v/redux-retrieval.svg?style=flat-square)](https://www.npmjs.com/package/redux-retrieval)
+[![npm](https://img.shields.io/npm/dt/redux-retrieval.svg?style=flat-square)](https://www.npmjs.com/package/redux-retrieval)
 [![Travis](https://img.shields.io/travis/zincli/redux-retrieval.svg?style=flat-square)](https://travis-ci.org/zincli/redux-retrieval)
 [![Codecov](https://img.shields.io/codecov/c/github/zincli/redux-retrieval.svg?style=flat-square)](https://codecov.io/gh/zincli/redux-retrieval)
 
@@ -24,7 +26,7 @@ writing a little code necessary. (For existed projects, it could remove some boi
 
 // More explanations work in progress.
 
-## Documents
+## Documentation
 
 * [中文](https://zincli.github.io/redux-retrieval/docs/zh/book/)
 
